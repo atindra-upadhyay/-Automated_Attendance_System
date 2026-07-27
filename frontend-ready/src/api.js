@@ -1,4 +1,5 @@
-const API = (endpoint) => `http://localhost:4000/api/${endpoint}`;
+const BASE_URL = process.env.REACT_APP_API_URL || 'https://automated-attendance-system-ddz5.onrender.com';
+const API = (endpoint) => `${BASE_URL.replace(/\/$/, '')}/api/${endpoint.replace(/^\//, '')}`;
 
 export async function apiFetch(endpoint, options = {}){
   const url = API(endpoint);
