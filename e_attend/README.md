@@ -119,6 +119,6 @@ e_attend/
 
 ## Development
 
-- Backend runs on `http://localhost:4000`
+- Backend runs on ``
 - Frontend runs on `http://localhost:3000`
 - Database should be accessible on `localhost:3306` (default MySQL port)
