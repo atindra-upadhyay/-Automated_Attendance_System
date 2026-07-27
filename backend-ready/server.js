@@ -1,6 +1,8 @@
 const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
 const pool = require('./db');
 const { router: authRouter, authMiddleware } = require('./routes/auth');
 const qrRouter = require('./routes/qr');
@@ -58,11 +60,45 @@ cron.schedule('0 2 * * *', async ()=>{
   }catch(err){ console.error('[CRON ERR]', err); }
 });
 
+async function initDatabase() {
+  try {
+    const sqlPath = path.join(__dirname, 'models.sql');
+    if (!fs.existsSync(sqlPath)) {
+      console.log('[DB INIT] models.sql not found');
+      return;
+    }
+    console.log('[DB INIT] Reading models.sql...');
+    const sql = fs.readFileSync(sqlPath, 'utf8');
+    const rawStatements = sql.split(';');
+    const conn = await pool.getConnection();
+    try {
+      for (let raw of rawStatements) {
+        const clean = raw
+          .split('\n')
+          .map(line => line.split('--')[0])
+          .join('\n')
+          .trim();
+        if (!clean) continue;
+        if (clean.toUpperCase().startsWith('CREATE DATABASE') || clean.toUpperCase().startsWith('USE ')) {
+          continue;
+        }
+        await conn.query(clean);
+      }
+      console.log('[DB INIT] All tables initialized successfully.');
+    } finally {
+      conn.release();
+    }
+  } catch (err) {
+    console.error('[DB INIT ERR] Error initializing database tables:', err.message);
+  }
+}
+
 const PORT = process.env.PORT || 4000;
 const server = app.listen(PORT, async () => {
   try {
     console.log(`Server started on ${PORT}`);
     console.log(`Backend URL: http://localhost:${PORT}/`);
+    await initDatabase();
     const bcrypt = require('bcrypt');
     const hashed = await bcrypt.hash('1234', 10);
     await pool.query('UPDATE users SET password = ? WHERE email = ?', [hashed, 'atindrau111@gmail.com']);
