@@ -23,7 +23,7 @@ export default function Register() {
       });
       const data = await res.json();
       if(!data.ok){
-        throw new Error(data.message || data.error || 'Registration failed');
+        throw new Error(data.error || data.message || (data ? JSON.stringify(data) : '') || 'Registration failed');
       }
       alert('✅ Account created. Please login.');
       navigate('/');

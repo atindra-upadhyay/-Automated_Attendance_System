@@ -84,6 +84,22 @@ async function initDatabase() {
         }
         await conn.query(clean);
       }
+      
+      // Ensure phone_number and imei_number columns exist in users table (migration safety)
+      for (const col of [
+        "ADD COLUMN phone_number VARCHAR(20) UNIQUE",
+        "ADD COLUMN imei_number VARCHAR(15) UNIQUE"
+      ]) {
+        try {
+          await conn.query(`ALTER TABLE users ${col}`);
+        } catch (err) {
+          // Ignore ER_DUP_FIELDNAME (field already exists)
+          if (err.code !== 'ER_DUP_FIELDNAME' && err.errno !== 1060) {
+            console.log(`[DB INIT] Column migration info: ${err.message}`);
+          }
+        }
+      }
+      
       console.log('[DB INIT] All tables initialized successfully.');
     } finally {
       conn.release();
