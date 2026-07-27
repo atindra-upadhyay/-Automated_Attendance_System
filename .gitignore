@@ -2,4 +2,16 @@ node_modules/
 build/
 .env
 *.log
+*.pdf
+*.lnk
+*.zip
+*.pptx
+*.docx
+*.jpg
+*.png
+*.py
+*.ini
+AI_Resume_Analyzer/
+aatin/
+e_attend/
 .DS_Store
