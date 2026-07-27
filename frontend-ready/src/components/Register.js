@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import API from '../api';
 
 export default function Register() {
   const [name, setName] = useState('');
@@ -15,7 +16,7 @@ export default function Register() {
     e.preventDefault();
     setLoading(true);
     try{
-      const res = await fetch('http://localhost:4000/api/auth/register',{
+      const res = await fetch(API('auth/register'),{
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ name, email, password, role, phone_number, imei_number })

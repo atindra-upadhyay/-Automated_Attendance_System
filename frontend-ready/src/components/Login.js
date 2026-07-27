@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import API from "../api";
 
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
@@ -12,7 +13,7 @@ export default function Login({ onLogin }) {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:4000/api/auth/login', {
+      const response = await fetch(API('auth/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -32,7 +33,7 @@ export default function Login({ onLogin }) {
       else navigate("/admin");
     } catch (error) {
       const message = error.message === "Failed to fetch"
-        ? "Cannot reach the backend. Make sure it is running on http://localhost:4000"
+        ? `Cannot reach the backend. Make sure the server is running and accessible at: ${API('')}`
         : error.message;
       alert(`❌ ${message}`);
     } finally {
