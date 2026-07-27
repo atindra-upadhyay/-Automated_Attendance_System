@@ -17,4 +17,9 @@ if (process.env.DATABASE_URL) {
   });
 }
 
+// Prevent pool from crashing the Node process on unhandled connection/query errors
+pool.on('error', (err) => {
+  console.error('[DATABASE POOL ERROR]', err);
+});
+
 module.exports = pool;

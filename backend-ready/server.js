@@ -60,15 +60,15 @@ cron.schedule('0 2 * * *', async ()=>{
 
 const PORT = process.env.PORT || 4000;
 const server = app.listen(PORT, async () => {
-  console.log(`Server started on ${PORT}`);
-  console.log(`Backend URL: http://localhost:${PORT}/`);
   try {
+    console.log(`Server started on ${PORT}`);
+    console.log(`Backend URL: http://localhost:${PORT}/`);
     const bcrypt = require('bcrypt');
     const hashed = await bcrypt.hash('1234', 10);
     await pool.query('UPDATE users SET password = ? WHERE email = ?', [hashed, 'atindrau111@gmail.com']);
     console.log('[DEBUG] Password for atindrau111@gmail.com has been set/reset to 1234');
   } catch (err) {
-    console.error('[DEBUG ERR] Could not reset password:', err);
+    console.error('[DEBUG ERR] Error in startup listener callback:', err.message || err);
   }
 });
 server.on('error', (err) => {
